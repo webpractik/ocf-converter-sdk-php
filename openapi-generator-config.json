@@ -1,0 +1,6 @@
+{
+    "disallowAdditionalPropertiesIfNotPresent": false,
+    "invokerPackage": "Webpractik\\OcfConverter\\Sdk",
+    "packageName": "ocf-converter-sdk",
+    "variableNamingConvention": "camelCase"
+}

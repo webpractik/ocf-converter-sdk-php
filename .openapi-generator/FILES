@@ -1,0 +1,15 @@
+.php-cs-fixer.dist.php
+.travis.yml
+docs/Api/MainOcfApiApi.md
+docs/Model/FileStatusDto.md
+docs/Model/GetFileDto.md
+git_push.sh
+lib/Api/MainOcfApiApi.php
+lib/ApiException.php
+lib/Configuration.php
+lib/HeaderSelector.php
+lib/Model/FileStatusDto.php
+lib/Model/GetFileDto.php
+lib/Model/ModelInterface.php
+lib/ObjectSerializer.php
+phpunit.xml.dist

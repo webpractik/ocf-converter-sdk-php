@@ -1,0 +1,58 @@
+{
+    "name": "webpractik/ocf-converter-sdk",
+    "description": "SDK for onlineconvertfree.com file conversion API",
+    "keywords": [
+        "openapitools",
+        "openapi-generator",
+        "openapi",
+        "php",
+        "sdk",
+        "rest",
+        "api"
+    ],
+    "homepage": "https://github.com/webpractik/ocf-converter-sdk-php#readme",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "OpenAPI-Generator contributors",
+            "homepage": "https://openapi-generator.tech"
+        },
+        {
+            "name": "Pjotr Shkumat",
+            "email": "p.shkumat@webpractik.ru",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/webpractik/ocf-converter-sdk-php/issues",
+        "source": "https://github.com/webpractik/ocf-converter-sdk-php",
+        "docs": "https://github.com/webpractik/ocf-converter-sdk-php#readme"
+    },
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "guzzlehttp/guzzle": "^7.3",
+        "guzzlehttp/psr7": "^1.7 || ^2.0"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "phpunit/phpunit": "^8.0 || ^9.0",
+        "friendsofphp/php-cs-fixer": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webpractik\\OcfConverter\\Sdk\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webpractik\\OcfConverter\\Sdk\\Test\\": "test/"
+        }
+    },
+    "minimum-stability": "stable",
+    "scripts": {
+        "api-codegen": "openapi-generator-cli generate -g php -c openapi-generator-config.json --git-host github.com --git-user-id webpractik --git-repo-id ocf-converter-sdk-php -i https://api-tasker.onlineconvertfree.com/api/json/content?token=nya"
+    }
+}
