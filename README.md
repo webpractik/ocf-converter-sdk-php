@@ -55,7 +55,7 @@ try {
 
 SDK is made available under the MIT License (MIT). Please see [License File](LICENSE) for more information.
 
-## Development
+## Contribution
 
 [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator-cli/) is used for the client generation.
 
