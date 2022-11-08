@@ -40,10 +40,12 @@ try {
 
     if ($fileStatusCode === Webpractik\OcfConverter\Sdk\OcfFileStatus::READY) {
         $resultUrl = $client->getResultingFileUrl($fileId);
-    }
 
-    if ($canDeleteFile) {
-        $client->deleteFile($fileId);
+        $resultFileName = basename($resultUrl);
+
+        if (file_put_contents($resultFileName, file_get_contents($resultUrl))) {
+            $client->deleteFile($fileId);
+        }
     }
 } catch (Exception $e) {
     echo 'Exception: ', $e->getMessage(), PHP_EOL;
