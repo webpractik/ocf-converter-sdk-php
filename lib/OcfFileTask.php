@@ -83,6 +83,6 @@ class OcfFileTask
         [$fileStatus, $statusCode, $headers] = $this->apiInstance->appControllerCheckFileStatusV1WithHttpInfo($this->apiKey, $this->fileId);
 
         $this->fileStatus            = $fileStatus;
-        $this->secondsUntilNextCheck = array_key_exists('retry-after', $headers) ? (int)$headers['retry-after'] : 5;
+        $this->secondsUntilNextCheck = array_key_exists('Retry-After', $headers) ? (int)$headers['Retry-After'][0] : 5;
     }
 }
