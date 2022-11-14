@@ -11,5 +11,6 @@ Name | Type | Description | Notes
 **sTATUS** | **string** | File status |
 **aUTHOR** | **float** | File author id |
 **iDFILE** | **string** | File id |
+**iD** | **float** | Id in DB |
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)

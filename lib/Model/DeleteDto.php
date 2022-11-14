@@ -1,6 +1,6 @@
 <?php
 /**
- * FileStatusDto
+ * DeleteDto
  * PHP version 7.4
  *
  * @category Class
@@ -29,7 +29,7 @@ use \ArrayAccess;
 use \Webpractik\OcfConverter\Sdk\ObjectSerializer;
 
 /**
- * FileStatusDto Class Doc Comment
+ * DeleteDto Class Doc Comment
  *
  * @category Class
  * @package  Webpractik\OcfConverter\Sdk
@@ -37,7 +37,7 @@ use \Webpractik\OcfConverter\Sdk\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
+class DeleteDto implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -46,7 +46,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'FileStatusDto';
+    protected static $openAPIModelName = 'DeleteDto';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -54,14 +54,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'cONVERTEDSIZE' => 'float',
-        'cONVERTEDFILE' => 'string',
-        'tIMECONVERTED' => 'string',
-        'tIMEADD'       => 'string',
-        'sTATUS'        => 'string',
-        'aUTHOR'        => 'float',
-        'iDFILE'        => 'string',
-        'iD'            => 'float',
+        'status' => 'bool',
     ];
 
     /**
@@ -72,14 +65,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'cONVERTEDSIZE' => null,
-        'cONVERTEDFILE' => null,
-        'tIMECONVERTED' => null,
-        'tIMEADD'       => null,
-        'sTATUS'        => null,
-        'aUTHOR'        => null,
-        'iDFILE'        => null,
-        'iD'            => null,
+        'status' => null,
     ];
 
     /**
@@ -88,14 +74,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'cONVERTEDSIZE' => false,
-        'cONVERTEDFILE' => false,
-        'tIMECONVERTED' => false,
-        'tIMEADD'       => false,
-        'sTATUS'        => false,
-        'aUTHOR'        => false,
-        'iDFILE'        => false,
-        'iD'            => false,
+        'status' => false,
     ];
 
     /**
@@ -176,14 +155,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'cONVERTEDSIZE' => 'CONVERTED_SIZE',
-        'cONVERTEDFILE' => 'CONVERTED_FILE',
-        'tIMECONVERTED' => 'TIME_CONVERTED',
-        'tIMEADD'       => 'TIME_ADD',
-        'sTATUS'        => 'STATUS',
-        'aUTHOR'        => 'AUTHOR',
-        'iDFILE'        => 'ID_FILE',
-        'iD'            => 'ID',
+        'status' => 'status',
     ];
 
     /**
@@ -192,14 +164,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'cONVERTEDSIZE' => 'setCONVERTEDSIZE',
-        'cONVERTEDFILE' => 'setCONVERTEDFILE',
-        'tIMECONVERTED' => 'setTIMECONVERTED',
-        'tIMEADD'       => 'setTIMEADD',
-        'sTATUS'        => 'setSTATUS',
-        'aUTHOR'        => 'setAUTHOR',
-        'iDFILE'        => 'setIDFILE',
-        'iD'            => 'setID',
+        'status' => 'setStatus',
     ];
 
     /**
@@ -208,14 +173,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'cONVERTEDSIZE' => 'getCONVERTEDSIZE',
-        'cONVERTEDFILE' => 'getCONVERTEDFILE',
-        'tIMECONVERTED' => 'getTIMECONVERTED',
-        'tIMEADD'       => 'getTIMEADD',
-        'sTATUS'        => 'getSTATUS',
-        'aUTHOR'        => 'getAUTHOR',
-        'iDFILE'        => 'getIDFILE',
-        'iD'            => 'getID',
+        'status' => 'getStatus',
     ];
 
     /**
@@ -274,14 +232,7 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('cONVERTEDSIZE', $data ?? [], null);
-        $this->setIfExists('cONVERTEDFILE', $data ?? [], null);
-        $this->setIfExists('tIMECONVERTED', $data ?? [], null);
-        $this->setIfExists('tIMEADD', $data ?? [], null);
-        $this->setIfExists('sTATUS', $data ?? [], null);
-        $this->setIfExists('aUTHOR', $data ?? [], null);
-        $this->setIfExists('iDFILE', $data ?? [], null);
-        $this->setIfExists('iD', $data ?? [], null);
+        $this->setIfExists('status', $data ?? [], null);
     }
 
     /**
@@ -311,29 +262,8 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['cONVERTEDSIZE'] === null) {
-            $invalidProperties[] = "'cONVERTEDSIZE' can't be null";
-        }
-        if ($this->container['cONVERTEDFILE'] === null) {
-            $invalidProperties[] = "'cONVERTEDFILE' can't be null";
-        }
-        if ($this->container['tIMECONVERTED'] === null) {
-            $invalidProperties[] = "'tIMECONVERTED' can't be null";
-        }
-        if ($this->container['tIMEADD'] === null) {
-            $invalidProperties[] = "'tIMEADD' can't be null";
-        }
-        if ($this->container['sTATUS'] === null) {
-            $invalidProperties[] = "'sTATUS' can't be null";
-        }
-        if ($this->container['aUTHOR'] === null) {
-            $invalidProperties[] = "'aUTHOR' can't be null";
-        }
-        if ($this->container['iDFILE'] === null) {
-            $invalidProperties[] = "'iDFILE' can't be null";
-        }
-        if ($this->container['iD'] === null) {
-            $invalidProperties[] = "'iD' can't be null";
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
         }
 
         return $invalidProperties;
@@ -351,225 +281,29 @@ class FileStatusDto implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets cONVERTEDSIZE
+     * Gets status
      *
-     * @return float
+     * @return bool
      */
-    public function getCONVERTEDSIZE()
+    public function getStatus()
     {
-        return $this->container['cONVERTEDSIZE'];
+        return $this->container['status'];
     }
 
     /**
-     * Sets cONVERTEDSIZE
+     * Sets status
      *
-     * @param float $cONVERTEDSIZE File size
+     * @param bool $status Status
      *
      * @return self
      */
-    public function setCONVERTEDSIZE($cONVERTEDSIZE)
+    public function setStatus($status)
     {
-        if (is_null($cONVERTEDSIZE)) {
-            throw new \InvalidArgumentException('non-nullable cONVERTEDSIZE cannot be null');
+        if (is_null($status)) {
+            throw new \InvalidArgumentException('non-nullable status cannot be null');
         }
 
-        $this->container['cONVERTEDSIZE'] = $cONVERTEDSIZE;
-
-        return $this;
-    }
-
-    /**
-     * Gets cONVERTEDFILE
-     *
-     * @return string
-     */
-    public function getCONVERTEDFILE()
-    {
-        return $this->container['cONVERTEDFILE'];
-    }
-
-    /**
-     * Sets cONVERTEDFILE
-     *
-     * @param string $cONVERTEDFILE File path
-     *
-     * @return self
-     */
-    public function setCONVERTEDFILE($cONVERTEDFILE)
-    {
-        if (is_null($cONVERTEDFILE)) {
-            throw new \InvalidArgumentException('non-nullable cONVERTEDFILE cannot be null');
-        }
-
-        $this->container['cONVERTEDFILE'] = $cONVERTEDFILE;
-
-        return $this;
-    }
-
-    /**
-     * Gets tIMECONVERTED
-     *
-     * @return string
-     */
-    public function getTIMECONVERTED()
-    {
-        return $this->container['tIMECONVERTED'];
-    }
-
-    /**
-     * Sets tIMECONVERTED
-     *
-     * @param string $tIMECONVERTED File convert time
-     *
-     * @return self
-     */
-    public function setTIMECONVERTED($tIMECONVERTED)
-    {
-        if (is_null($tIMECONVERTED)) {
-            throw new \InvalidArgumentException('non-nullable tIMECONVERTED cannot be null');
-        }
-
-        $this->container['tIMECONVERTED'] = $tIMECONVERTED;
-
-        return $this;
-    }
-
-    /**
-     * Gets tIMEADD
-     *
-     * @return string
-     */
-    public function getTIMEADD()
-    {
-        return $this->container['tIMEADD'];
-    }
-
-    /**
-     * Sets tIMEADD
-     *
-     * @param string $tIMEADD File added time
-     *
-     * @return self
-     */
-    public function setTIMEADD($tIMEADD)
-    {
-        if (is_null($tIMEADD)) {
-            throw new \InvalidArgumentException('non-nullable tIMEADD cannot be null');
-        }
-
-        $this->container['tIMEADD'] = $tIMEADD;
-
-        return $this;
-    }
-
-    /**
-     * Gets sTATUS
-     *
-     * @return string
-     */
-    public function getSTATUS()
-    {
-        return $this->container['sTATUS'];
-    }
-
-    /**
-     * Sets sTATUS
-     *
-     * @param string $sTATUS File status
-     *
-     * @return self
-     */
-    public function setSTATUS($sTATUS)
-    {
-        if (is_null($sTATUS)) {
-            throw new \InvalidArgumentException('non-nullable sTATUS cannot be null');
-        }
-
-        $this->container['sTATUS'] = $sTATUS;
-
-        return $this;
-    }
-
-    /**
-     * Gets aUTHOR
-     *
-     * @return float
-     */
-    public function getAUTHOR()
-    {
-        return $this->container['aUTHOR'];
-    }
-
-    /**
-     * Sets aUTHOR
-     *
-     * @param float $aUTHOR File author id
-     *
-     * @return self
-     */
-    public function setAUTHOR($aUTHOR)
-    {
-        if (is_null($aUTHOR)) {
-            throw new \InvalidArgumentException('non-nullable aUTHOR cannot be null');
-        }
-
-        $this->container['aUTHOR'] = $aUTHOR;
-
-        return $this;
-    }
-
-    /**
-     * Gets iDFILE
-     *
-     * @return string
-     */
-    public function getIDFILE()
-    {
-        return $this->container['iDFILE'];
-    }
-
-    /**
-     * Sets iDFILE
-     *
-     * @param string $iDFILE File id
-     *
-     * @return self
-     */
-    public function setIDFILE($iDFILE)
-    {
-        if (is_null($iDFILE)) {
-            throw new \InvalidArgumentException('non-nullable iDFILE cannot be null');
-        }
-
-        $this->container['iDFILE'] = $iDFILE;
-
-        return $this;
-    }
-
-    /**
-     * Gets iD
-     *
-     * @return float
-     */
-    public function getID()
-    {
-        return $this->container['iD'];
-    }
-
-    /**
-     * Sets iD
-     *
-     * @param float $iD Id in DB
-     *
-     * @return self
-     */
-    public function setID($iD)
-    {
-        if (is_null($iD)) {
-            throw new \InvalidArgumentException('non-nullable iD cannot be null');
-        }
-
-        $this->container['iD'] = $iD;
+        $this->container['status'] = $status;
 
         return $this;
     }

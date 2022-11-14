@@ -115,12 +115,12 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerCheckFileStatus
-     * Проверить статус файла, полученного на внешнюю конвертацию
+     * Checking the status of a file received for conversion
      *
      * @param string $token token (required)
      * @param string $fileId fileId (required)
      *
-     * @return \Webpractik\OcfConverter\Sdk\Model\GetFileDto
+     * @return \Webpractik\OcfConverter\Sdk\Model\OldGetFileDto
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
@@ -133,7 +133,301 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerCheckFileStatusWithHttpInfo
-     * Проверить статус файла, полученного на внешнюю конвертацию
+     * Checking the status of a file received for conversion
+     *
+     * @param string $token (required)
+     * @param string $fileId (required)
+     *
+     * @return array of \Webpractik\OcfConverter\Sdk\Model\OldGetFileDto, HTTP status code, HTTP response headers (array of strings)
+     * @throws \InvalidArgumentException
+     * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
+     */
+    public function appControllerCheckFileStatusWithHttpInfo($token, $fileId)
+    {
+        $request = $this->appControllerCheckFileStatusRequest($token, $fileId);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int)$e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string)$e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int)$e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string)$request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string)$response->getBody()
+                );
+            }
+
+            switch ($statusCode) {
+                case 200:
+                    if ('\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ('\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
+            }
+
+            $returnType = '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string)$response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders(),
+            ];
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation appControllerCheckFileStatusAsync
+     * Checking the status of a file received for conversion
+     *
+     * @param string $token (required)
+     * @param string $fileId (required)
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerCheckFileStatusAsync($token, $fileId)
+    {
+        return $this->appControllerCheckFileStatusAsyncWithHttpInfo($token, $fileId)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation appControllerCheckFileStatusAsyncWithHttpInfo
+     * Checking the status of a file received for conversion
+     *
+     * @param string $token (required)
+     * @param string $fileId (required)
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerCheckFileStatusAsyncWithHttpInfo($token, $fileId)
+    {
+        $returnType = '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto';
+        $request    = $this->appControllerCheckFileStatusRequest($token, $fileId);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
+                },
+                function ($exception) {
+                    $response   = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string)$response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'appControllerCheckFileStatus'
+     *
+     * @param string $token (required)
+     * @param string $fileId (required)
+     *
+     * @return \GuzzleHttp\Psr7\Request
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerCheckFileStatusRequest($token, $fileId)
+    {
+        // verify the required parameter 'token' is set
+        if ($token === null || (is_array($token) && count($token) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $token when calling appControllerCheckFileStatus'
+            );
+        }
+
+        // verify the required parameter 'fileId' is set
+        if ($fileId === null || (is_array($fileId) && count($fileId) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $fileId when calling appControllerCheckFileStatus'
+            );
+        }
+
+        $resourcePath = '/api';
+        $formParams   = [];
+        $queryParams  = [];
+        $headerParams = [];
+        $httpBody     = '';
+        $multipart    = false;
+
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $token,
+            'token', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            true // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $fileId,
+            'fileId', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            true // required
+        ) ?? []);
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name'     => $formParamName,
+                            'contents' => $formParamValueItem,
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query         = ObjectSerializer::buildQuery($queryParams);
+
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation appControllerCheckFileStatusV1
+     * Checking the status of a file received for conversion v1
+     *
+     * @param string $token token (required)
+     * @param string $fileId fileId (required)
+     *
+     * @return \Webpractik\OcfConverter\Sdk\Model\GetFileDto
+     * @throws \InvalidArgumentException
+     * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
+     */
+    public function appControllerCheckFileStatusV1($token, $fileId)
+    {
+        [$response] = $this->appControllerCheckFileStatusV1WithHttpInfo($token, $fileId);
+
+        return $response;
+    }
+
+    /**
+     * Operation appControllerCheckFileStatusV1WithHttpInfo
+     * Checking the status of a file received for conversion v1
      *
      * @param string $token (required)
      * @param string $fileId (required)
@@ -142,9 +436,9 @@ class MainOcfApiApi
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
-    public function appControllerCheckFileStatusWithHttpInfo($token, $fileId)
+    public function appControllerCheckFileStatusV1WithHttpInfo($token, $fileId)
     {
-        $request = $this->appControllerCheckFileStatusRequest($token, $fileId);
+        $request = $this->appControllerCheckFileStatusV1Request($token, $fileId);
 
         try {
             $options = $this->createHttpClientOption();
@@ -230,8 +524,8 @@ class MainOcfApiApi
     }
 
     /**
-     * Operation appControllerCheckFileStatusAsync
-     * Проверить статус файла, полученного на внешнюю конвертацию
+     * Operation appControllerCheckFileStatusV1Async
+     * Checking the status of a file received for conversion v1
      *
      * @param string $token (required)
      * @param string $fileId (required)
@@ -239,9 +533,9 @@ class MainOcfApiApi
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \InvalidArgumentException
      */
-    public function appControllerCheckFileStatusAsync($token, $fileId)
+    public function appControllerCheckFileStatusV1Async($token, $fileId)
     {
-        return $this->appControllerCheckFileStatusAsyncWithHttpInfo($token, $fileId)
+        return $this->appControllerCheckFileStatusV1AsyncWithHttpInfo($token, $fileId)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -250,8 +544,8 @@ class MainOcfApiApi
     }
 
     /**
-     * Operation appControllerCheckFileStatusAsyncWithHttpInfo
-     * Проверить статус файла, полученного на внешнюю конвертацию
+     * Operation appControllerCheckFileStatusV1AsyncWithHttpInfo
+     * Checking the status of a file received for conversion v1
      *
      * @param string $token (required)
      * @param string $fileId (required)
@@ -259,10 +553,10 @@ class MainOcfApiApi
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \InvalidArgumentException
      */
-    public function appControllerCheckFileStatusAsyncWithHttpInfo($token, $fileId)
+    public function appControllerCheckFileStatusV1AsyncWithHttpInfo($token, $fileId)
     {
         $returnType = '\Webpractik\OcfConverter\Sdk\Model\GetFileDto';
-        $request    = $this->appControllerCheckFileStatusRequest($token, $fileId);
+        $request    = $this->appControllerCheckFileStatusV1Request($token, $fileId);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -301,7 +595,7 @@ class MainOcfApiApi
     }
 
     /**
-     * Create request for operation 'appControllerCheckFileStatus'
+     * Create request for operation 'appControllerCheckFileStatusV1'
      *
      * @param string $token (required)
      * @param string $fileId (required)
@@ -309,23 +603,23 @@ class MainOcfApiApi
      * @return \GuzzleHttp\Psr7\Request
      * @throws \InvalidArgumentException
      */
-    public function appControllerCheckFileStatusRequest($token, $fileId)
+    public function appControllerCheckFileStatusV1Request($token, $fileId)
     {
         // verify the required parameter 'token' is set
         if ($token === null || (is_array($token) && count($token) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $token when calling appControllerCheckFileStatus'
+                'Missing the required parameter $token when calling appControllerCheckFileStatusV1'
             );
         }
 
         // verify the required parameter 'fileId' is set
         if ($fileId === null || (is_array($fileId) && count($fileId) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $fileId when calling appControllerCheckFileStatus'
+                'Missing the required parameter $fileId when calling appControllerCheckFileStatusV1'
             );
         }
 
-        $resourcePath = '/api/{fileId}';
+        $resourcePath = '/api/v1/{fileId}';
         $formParams   = [];
         $queryParams  = [];
         $headerParams = [];
@@ -409,28 +703,30 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerDeleteFile
-     * Удалить сконвертированный файл
+     * Delete file sent for conversion
      *
      * @param string $fileId fileId (required)
      * @param string $token token (required)
      *
-     * @return void
+     * @return \Webpractik\OcfConverter\Sdk\Model\DeleteDto
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
     public function appControllerDeleteFile($fileId, $token)
     {
-        $this->appControllerDeleteFileWithHttpInfo($fileId, $token);
+        [$response] = $this->appControllerDeleteFileWithHttpInfo($fileId, $token);
+
+        return $response;
     }
 
     /**
      * Operation appControllerDeleteFileWithHttpInfo
-     * Удалить сконвертированный файл
+     * Delete file sent for conversion
      *
      * @param string $fileId (required)
      * @param string $token (required)
      *
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Webpractik\OcfConverter\Sdk\Model\DeleteDto, HTTP status code, HTTP response headers (array of strings)
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
@@ -473,9 +769,49 @@ class MainOcfApiApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            switch ($statusCode) {
+                case 200:
+                    if ('\Webpractik\OcfConverter\Sdk\Model\DeleteDto' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ('\Webpractik\OcfConverter\Sdk\Model\DeleteDto' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Webpractik\OcfConverter\Sdk\Model\DeleteDto', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
+            }
+
+            $returnType = '\Webpractik\OcfConverter\Sdk\Model\DeleteDto';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string)$response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders(),
+            ];
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Webpractik\OcfConverter\Sdk\Model\DeleteDto',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -483,7 +819,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerDeleteFileAsync
-     * Удалить сконвертированный файл
+     * Delete file sent for conversion
      *
      * @param string $fileId (required)
      * @param string $token (required)
@@ -503,7 +839,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerDeleteFileAsyncWithHttpInfo
-     * Удалить сконвертированный файл
+     * Delete file sent for conversion
      *
      * @param string $fileId (required)
      * @param string $token (required)
@@ -513,14 +849,27 @@ class MainOcfApiApi
      */
     public function appControllerDeleteFileAsyncWithHttpInfo($fileId, $token)
     {
-        $returnType = '';
+        $returnType = '\Webpractik\OcfConverter\Sdk\Model\DeleteDto';
         $request    = $this->appControllerDeleteFileRequest($fileId, $token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
                 },
                 function ($exception) {
                     $response   = $exception->getResponse();
@@ -592,11 +941,11 @@ class MainOcfApiApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -770,7 +1119,7 @@ class MainOcfApiApi
      */
     public function appControllerGetHelloRequest()
     {
-        $resourcePath = '/api';
+        $resourcePath = '/api/health/check';
         $formParams   = [];
         $queryParams  = [];
         $headerParams = [];
@@ -1049,11 +1398,11 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerGetList
-     * Получить список конвертаций
+     * Get a list of conversions
      *
      * @param string $token token (required)
      *
-     * @return \Webpractik\OcfConverter\Sdk\Model\GetFileDto[]
+     * @return \Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
@@ -1066,7 +1415,280 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerGetListWithHttpInfo
-     * Получить список конвертаций
+     * Get a list of conversions
+     *
+     * @param string $token (required)
+     *
+     * @return array of \Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[], HTTP status code, HTTP response headers (array of strings)
+     * @throws \InvalidArgumentException
+     * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
+     */
+    public function appControllerGetListWithHttpInfo($token)
+    {
+        $request = $this->appControllerGetListRequest($token);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int)$e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string)$e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int)$e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string)$request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string)$response->getBody()
+                );
+            }
+
+            switch ($statusCode) {
+                case 200:
+                    if ('\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ('\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
+            }
+
+            $returnType = '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string)$response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders(),
+            ];
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation appControllerGetListAsync
+     * Get a list of conversions
+     *
+     * @param string $token (required)
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerGetListAsync($token)
+    {
+        return $this->appControllerGetListAsyncWithHttpInfo($token)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation appControllerGetListAsyncWithHttpInfo
+     * Get a list of conversions
+     *
+     * @param string $token (required)
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerGetListAsyncWithHttpInfo($token)
+    {
+        $returnType = '\Webpractik\OcfConverter\Sdk\Model\OldGetFileDto[]';
+        $request    = $this->appControllerGetListRequest($token);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string)$response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders(),
+                    ];
+                },
+                function ($exception) {
+                    $response   = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string)$response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'appControllerGetList'
+     *
+     * @param string $token (required)
+     *
+     * @return \GuzzleHttp\Psr7\Request
+     * @throws \InvalidArgumentException
+     */
+    public function appControllerGetListRequest($token)
+    {
+        // verify the required parameter 'token' is set
+        if ($token === null || (is_array($token) && count($token) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $token when calling appControllerGetList'
+            );
+        }
+
+        $resourcePath = '/api/list';
+        $formParams   = [];
+        $queryParams  = [];
+        $headerParams = [];
+        $httpBody     = '';
+        $multipart    = false;
+
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $token,
+            'token', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            true // required
+        ) ?? []);
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name'     => $formParamName,
+                            'contents' => $formParamValueItem,
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query         = ObjectSerializer::buildQuery($queryParams);
+
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation appControllerGetListV1
+     * Get a list of conversions V1
+     *
+     * @param string $token token (required)
+     *
+     * @return \Webpractik\OcfConverter\Sdk\Model\GetFileDto[]
+     * @throws \InvalidArgumentException
+     * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
+     */
+    public function appControllerGetListV1($token)
+    {
+        [$response] = $this->appControllerGetListV1WithHttpInfo($token);
+
+        return $response;
+    }
+
+    /**
+     * Operation appControllerGetListV1WithHttpInfo
+     * Get a list of conversions V1
      *
      * @param string $token (required)
      *
@@ -1074,9 +1696,9 @@ class MainOcfApiApi
      * @throws \InvalidArgumentException
      * @throws \Webpractik\OcfConverter\Sdk\ApiException on non-2xx response
      */
-    public function appControllerGetListWithHttpInfo($token)
+    public function appControllerGetListV1WithHttpInfo($token)
     {
-        $request = $this->appControllerGetListRequest($token);
+        $request = $this->appControllerGetListV1Request($token);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1162,17 +1784,17 @@ class MainOcfApiApi
     }
 
     /**
-     * Operation appControllerGetListAsync
-     * Получить список конвертаций
+     * Operation appControllerGetListV1Async
+     * Get a list of conversions V1
      *
      * @param string $token (required)
      *
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \InvalidArgumentException
      */
-    public function appControllerGetListAsync($token)
+    public function appControllerGetListV1Async($token)
     {
-        return $this->appControllerGetListAsyncWithHttpInfo($token)
+        return $this->appControllerGetListV1AsyncWithHttpInfo($token)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1181,18 +1803,18 @@ class MainOcfApiApi
     }
 
     /**
-     * Operation appControllerGetListAsyncWithHttpInfo
-     * Получить список конвертаций
+     * Operation appControllerGetListV1AsyncWithHttpInfo
+     * Get a list of conversions V1
      *
      * @param string $token (required)
      *
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \InvalidArgumentException
      */
-    public function appControllerGetListAsyncWithHttpInfo($token)
+    public function appControllerGetListV1AsyncWithHttpInfo($token)
     {
         $returnType = '\Webpractik\OcfConverter\Sdk\Model\GetFileDto[]';
-        $request    = $this->appControllerGetListRequest($token);
+        $request    = $this->appControllerGetListV1Request($token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1231,23 +1853,23 @@ class MainOcfApiApi
     }
 
     /**
-     * Create request for operation 'appControllerGetList'
+     * Create request for operation 'appControllerGetListV1'
      *
      * @param string $token (required)
      *
      * @return \GuzzleHttp\Psr7\Request
      * @throws \InvalidArgumentException
      */
-    public function appControllerGetListRequest($token)
+    public function appControllerGetListV1Request($token)
     {
         // verify the required parameter 'token' is set
         if ($token === null || (is_array($token) && count($token) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $token when calling appControllerGetList'
+                'Missing the required parameter $token when calling appControllerGetListV1'
             );
         }
 
-        $resourcePath = '/api/files/list';
+        $resourcePath = '/api/v1/files/list';
         $formParams   = [];
         $queryParams  = [];
         $headerParams = [];
@@ -1322,7 +1944,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerUploadFile
-     * Загрузить файл на конвертацию
+     * Upload file for conversion
      *
      * @param \SplFileObject $file Current file (required)
      * @param string         $to The target subreddit (required)
@@ -1341,7 +1963,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerUploadFileWithHttpInfo
-     * Загрузить файл на конвертацию
+     * Upload file for conversion
      *
      * @param \SplFileObject $file Current file (required)
      * @param string         $to The target subreddit (required)
@@ -1440,7 +2062,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerUploadFileAsync
-     * Загрузить файл на конвертацию
+     * Upload file for conversion
      *
      * @param \SplFileObject $file Current file (required)
      * @param string         $to The target subreddit (required)
@@ -1461,7 +2083,7 @@ class MainOcfApiApi
 
     /**
      * Operation appControllerUploadFileAsyncWithHttpInfo
-     * Загрузить файл на конвертацию
+     * Upload file for conversion
      *
      * @param \SplFileObject $file Current file (required)
      * @param string         $to The target subreddit (required)
