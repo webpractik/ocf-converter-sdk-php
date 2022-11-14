@@ -10,7 +10,7 @@ use Webpractik\OcfConverter\Sdk\Api\MainOcfApiApi;
  */
 class OcfClient
 {
-    private string $token;
+    private string $apiKey;
 
     private MainOcfApiApi $apiInstance;
 
@@ -19,7 +19,7 @@ class OcfClient
      */
     public function __construct(string $apiKey)
     {
-        $this->token = $apiKey;
+        $this->apiKey = $apiKey;
 
         $this->apiInstance = new MainOcfApiApi();
     }
@@ -30,64 +30,15 @@ class OcfClient
      * @param string $filePath File path
      * @param string $toFormat Destination format
      *
-     * @return string File ID
+     * @return OcfFileTask File conversion task
      * @throws ApiException
      */
-    public function uploadFile(string $filePath, string $toFormat): string
+    public function uploadFile(string $filePath, string $toFormat): OcfFileTask
     {
         $file = new SplFileObject($filePath);
 
-        $result = $this->apiInstance->appControllerUploadFile($file, $toFormat, $this->token);
+        $result = $this->apiInstance->appControllerUploadFile($file, $toFormat, $this->apiKey);
 
-        return $result->getIDFILE();
-    }
-
-    /**
-     * Get file status code by its ID
-     *
-     * Possible status codes are in \Webpractik\OcfConverter\Sdk\OcfFileStatus
-     *
-     * @param string $fileId
-     *
-     * @return string Status Code
-     * @throws ApiException
-     */
-    public function getFileStatusCode(string $fileId): string
-    {
-        $fileStatus = $this->apiInstance->appControllerCheckFileStatus($this->token, $fileId);
-
-        return $fileStatus->getStatus();
-    }
-
-    /**
-     * Get resulting file URL by file ID
-     *
-     * @param string $fileId
-     *
-     * @return string|null
-     * @throws ApiException
-     */
-    public function getResultingFileUrl(string $fileId): ?string
-    {
-        $fileStatus = $this->apiInstance->appControllerCheckFileStatus($this->token, $fileId);
-
-        if ($fileStatus->getStatus() === OcfFileStatus::READY) {
-            return $fileStatus->getPath();
-        }
-
-        return null;
-    }
-
-    /**
-     * Delete file by its ID
-     *
-     * @param string $fileId
-     *
-     * @return void
-     * @throws ApiException
-     */
-    public function deleteFile(string $fileId): void
-    {
-        $this->apiInstance->appControllerDeleteFile($fileId, $this->token);
+        return new OcfFileTask($this->apiKey, $result->getIDFILE());
     }
 }

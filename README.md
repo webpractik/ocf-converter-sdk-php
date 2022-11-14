@@ -34,17 +34,17 @@ $filePath = '/path/to/file/to/convert.png';
 $extensionToConvertTo = 'pdf';
 
 try {
-    $fileId = $client->uploadFile($filePath, $extensionToConvertTo);
+    $task = $client->uploadFile($filePath, $extensionToConvertTo);
 
-    $fileStatusCode = $client->getFileStatusCode($fileId);
+    $result = $task->waitForConversion();
 
-    if ($fileStatusCode === Webpractik\OcfConverter\Sdk\OcfFileStatus::READY) {
-        $resultUrl = $client->getResultingFileUrl($fileId);
+    if ($result->isSuccess()) {
+        $resultUrl = $result->getResultingFileUrl();
 
         $resultFileName = basename($resultUrl);
 
         if (file_put_contents($resultFileName, file_get_contents($resultUrl))) {
-            $client->deleteFile($fileId);
+            $result->deleteFile();
         }
     }
 } catch (Exception $e) {
